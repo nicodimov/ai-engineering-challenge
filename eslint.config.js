@@ -7,4 +7,14 @@ export default tseslint.config(
   {
     ignores: ["node_modules", "coverage", "dist"],
   },
+  {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        URL: "readonly",
+        console: "readonly",
+        process: "readonly",
+      },
+    },
+  },
 );

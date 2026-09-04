@@ -1,6 +1,7 @@
 import type { Order, PriceBreakdown, Promotion } from "./types.js";
 
 const TAX_RATE = 0.1;
+const PREMIUM_FREE_STANDARD_SHIPPING_THRESHOLD = 50;
 
 function roundMoney(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -12,37 +13,45 @@ export function calculateSubtotal(order: Order): number {
   );
 }
 
+function merchandiseDiscount(subtotal: number, promotion?: Promotion): number {
+  if (promotion?.type === "PERCENT") {
+    return roundMoney(subtotal * (promotion.value / 100));
+  }
+  if (promotion?.type === "FIXED") {
+    return Math.min(subtotal, roundMoney(promotion.value));
+  }
+  return 0;
+}
+
+function baseShippingFee(order: Order, merchandiseSubtotal: number): number {
+  if (order.shippingMethod === "STANDARD") {
+    if (merchandiseSubtotal >= 75) return 0;
+    if (merchandiseSubtotal >= 25) return 5;
+    return 8;
+  }
+  if (merchandiseSubtotal >= 75) return 12;
+  if (merchandiseSubtotal >= 25) return 15;
+  return 18;
+}
+
+function qualifiesForPremiumFreeStandardShipping(
+  order: Order,
+  merchandiseAfterPromotions: number,
+): boolean {
+  return (
+    order.customerTier === "PREMIUM" &&
+    order.shippingMethod === "STANDARD" &&
+    merchandiseAfterPromotions >= PREMIUM_FREE_STANDARD_SHIPPING_THRESHOLD
+  );
+}
+
 export function priceOrder(order: Order, promotion?: Promotion): PriceBreakdown {
   const subtotal = calculateSubtotal(order);
-
-  let shipping = 0;
-  if (order.shippingMethod === "STANDARD") {
-    if (subtotal >= 75) {
-      shipping = 0;
-    } else if (subtotal >= 25) {
-      shipping = 5;
-    } else {
-      shipping = 8;
-    }
-  } else {
-    if (subtotal >= 75) {
-      shipping = 12;
-    } else if (subtotal >= 25) {
-      shipping = 15;
-    } else {
-      shipping = 18;
-    }
-  }
-
-  let discount = 0;
-  if (promotion?.type === "PERCENT") {
-    // Known issue: percentage promotions are currently affecting shipping too.
-    discount = roundMoney((subtotal + shipping) * (promotion.value / 100));
-  } else if (promotion?.type === "FIXED") {
-    discount = Math.min(subtotal, roundMoney(promotion.value));
-  }
-
+  const discount = merchandiseDiscount(subtotal, promotion);
   const discountedMerchandise = Math.max(0, roundMoney(subtotal - discount));
+  const shipping = qualifiesForPremiumFreeStandardShipping(order, discountedMerchandise)
+    ? 0
+    : baseShippingFee(order, subtotal);
   const tax = roundMoney(discountedMerchandise * TAX_RATE);
   const total = roundMoney(discountedMerchandise + shipping + tax);
 
