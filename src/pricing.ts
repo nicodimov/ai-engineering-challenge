@@ -1,6 +1,7 @@
 import type { Order, PriceBreakdown, Promotion } from "./types.js";
 
 const TAX_RATE = 0.1;
+const PREMIUM_FREE_STANDARD_SHIPPING_MINIMUM = 50;
 
 function roundMoney(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -12,9 +13,24 @@ export function calculateSubtotal(order: Order): number {
   );
 }
 
-export function priceOrder(order: Order, promotion?: Promotion): PriceBreakdown {
-  const subtotal = calculateSubtotal(order);
+function calculateDiscount(
+  subtotal: number,
+  promotion?: Promotion,
+): number {
+  if (promotion?.type === "PERCENT") {
+    return roundMoney(subtotal * (promotion.value / 100));
+  }
+  if (promotion?.type === "FIXED") {
+    return Math.min(subtotal, roundMoney(promotion.value));
+  }
+  return 0;
+}
 
+function calculateShipping(
+  order: Order,
+  subtotal: number,
+  discountedMerchandise: number,
+): number {
   let shipping = 0;
   if (order.shippingMethod === "STANDARD") {
     if (subtotal >= 75) {
@@ -34,15 +50,21 @@ export function priceOrder(order: Order, promotion?: Promotion): PriceBreakdown 
     }
   }
 
-  let discount = 0;
-  if (promotion?.type === "PERCENT") {
-    // Known issue: percentage promotions are currently affecting shipping too.
-    discount = roundMoney((subtotal + shipping) * (promotion.value / 100));
-  } else if (promotion?.type === "FIXED") {
-    discount = Math.min(subtotal, roundMoney(promotion.value));
+  if (
+    order.shippingMethod === "STANDARD" &&
+    order.customerTier === "PREMIUM" &&
+    discountedMerchandise >= PREMIUM_FREE_STANDARD_SHIPPING_MINIMUM
+  ) {
+    return 0;
   }
+  return shipping;
+}
 
+export function priceOrder(order: Order, promotion?: Promotion): PriceBreakdown {
+  const subtotal = calculateSubtotal(order);
+  const discount = calculateDiscount(subtotal, promotion);
   const discountedMerchandise = Math.max(0, roundMoney(subtotal - discount));
+  const shipping = calculateShipping(order, subtotal, discountedMerchandise);
   const tax = roundMoney(discountedMerchandise * TAX_RATE);
   const total = roundMoney(discountedMerchandise + shipping + tax);
 
