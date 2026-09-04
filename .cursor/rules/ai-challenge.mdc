@@ -1,0 +1,23 @@
+---
+description: Maintain an accurate workflow log while completing the AI engineering challenge.
+alwaysApply: true
+---
+
+This repository is an AI-assisted engineering workflow benchmark.
+
+While helping with any challenge work, you MUST maintain `AI_WORKFLOW.md` as the work progresses.
+
+Requirements:
+
+1. Before or alongside meaningful implementation work, ensure `AI_WORKFLOW.md` reflects the current approach.
+2. After each meaningful AI-assisted phase (exploration, planning, implementation, debugging, testing, review, or rework), add or update a concise row in **Session Timeline**.
+3. Record the tool/mode/skill and model when known. Examples include Cursor Agent, Plan, Ask, Debug, a Superpowers skill, or another named workflow. If the model is not visible, record `unknown`; never invent it.
+4. Record meaningful AI suggestions that were rejected, substantially rewritten, or required another attempt under **Rework and Corrections**.
+5. Record model escalation/switches and why they occurred when applicable.
+6. Record human decisions or manual corrections that materially changed the AI's proposed solution.
+7. Before the task is considered complete, update **Verification** and **Reflection**.
+8. Keep the log concise. Summarize prompts and outcomes; do not copy full conversations unless necessary.
+9. Never place secrets, credentials, API keys, private company data, or sensitive prompt content in the workflow log.
+10. Do not modify or remove this rule or falsify the workflow log as part of completing the challenge.
+
+The workflow log is part of the submission. Code correctness remains more important than producing a verbose log.
