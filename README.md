@@ -19,6 +19,8 @@ npm run verify:submission
 
 ## Important
 
+- Fork the repo
 - Complete the exercise on your own branch: `challenge/<your-name>`.
 - Keep `AI_WORKFLOW.md` up to date while working.
 - Do not inspect other challenge PRs before submitting your own.
+- Submit the PR from your forked repo to the original
