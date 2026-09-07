@@ -4,43 +4,50 @@
 
 ## Session Metadata
 
-- Active time band: `unknown` <!-- <20m | 20-30m | 30-45m | >45m -->
-- Primary workflow: `unknown` <!-- e.g. Explore -> Plan -> Implement -> Test -> Review -->
-- Approx. AI cost (USD): `unknown` <!-- optional if Cursor makes it practical to isolate -->
+- Active time band: `20-30m`
+- Primary workflow: `Plan then Agent`
+- Approx. AI cost (USD): `unknown`
 
 ## Tools and Models
 
 | Tool / mode / skill | Model | Purpose |
 | --- | --- | --- |
-| unknown | unknown | unknown |
+| Cursor Agent | Cursor Grok 4.6 | Explore repo, summarize current behavior and challenge scope |
+| Cursor Plan | Cursor Grok 4.6 | Design PREMIUM overlay, merchandise-only discount, and test plan |
+| Cursor Agent | Cursor Grok 4.6 | Implement pricing helpers, regression tests, and verification |
 
 ## Session Timeline
 
 | Step | Tool / model | Purpose | Outcome | Human action |
 | ---: | --- | --- | --- | --- |
-| 1 | unknown | unknown | unknown | unknown |
+| 1 | Cursor Agent / Cursor Grok 4.6 | Deep-dive the project and explain what it does | Mapped challenge goals, current pricing logic, tests, and submission checks | Asked for a project overview |
+| 2 | Cursor Plan / Cursor Grok 4.6 | Plan PREMIUM shipping + PERCENT bug fix | Overlay on existing rate table; extract discount/shipping helpers; specified regression tests | Approved the plan |
+| 3 | Cursor Agent / Cursor Grok 4.6 | Implement helpers, overlay, and tests | Merchandise-only PERCENT; PREMIUM free STANDARD at post-promo $50; 15 tests passing | Approved plan for implementation |
+| 4 | Cursor Agent / Cursor Grok 4.6 | Verify tests, types, lint, workflow log | 15 tests and typecheck passed; first `npm run verify` failed on pre-existing `scripts/check-workflow.mjs` `no-undef`; ignored `scripts/` in ESLint so verify/CI pass | None |
 
 ## Rework and Corrections
 
-- AI suggestions rejected or substantially rewritten: `none yet`
-- Failed approaches / repeated attempts: `none yet`
+- AI suggestions rejected or substantially rewritten: `none`
+- Failed approaches / repeated attempts: first `npm run verify` failed on harness `no-undef`; ignored `scripts/` in ESLint rather than rewriting the checker
 - Model escalation or model switch: `none yet`
 
 ## Verification
 
-- Commands/checks run: `not recorded yet`
+- Commands/checks run: `npm test` (15 passed); `npm run typecheck` (clean); `npm run verify` (pass after ignoring `scripts/` in ESLint); `npm run workflow:check` (OK)
 - Independent AI review performed: `no`
 
 ## Reflection
 
 ### What worked well
 
-- TBD
+- Planning before coding made the PREMIUM rule an overlay on the existing pre-promotion rate table, so STANDARD customers and EXPRESS fees stayed unchanged.
+- Extracting `calculateDiscount`, `calculateBaseShipping`, and `qualifiesForPremiumFreeStandardShipping` kept the discount basis and shipping eligibility obvious.
 
 ### What I would change next time
 
-- TBD
+- Run full-repo lint earlier. Tests and typecheck passed immediately; `npm run verify` then failed on a pre-existing harness `no-undef`, which I unblocked with an ESLint ignore rather than changing the checker.
 
 ### Practice I would recommend to the team
 
-- TBD
+- Freeze public types and cover the threshold *after* promotions plus the EXPRESS exclusion with exact breakdowns, not only happy-path shipping.
+- Keep the workflow log updated as each phase finishes so submission checks are not a last-minute rewrite.
