@@ -5,7 +5,7 @@
 ## Session Metadata
 
 - Active time band: `20-30m`
-- Primary workflow: `Plan then Agent`
+- Primary workflow: `Plan -> Agent -> Review`
 - Approx. AI cost (USD): `unknown`
 
 ## Tools and Models
@@ -15,6 +15,7 @@
 | Cursor Agent | Cursor Grok 4.6 | Explore repo, summarize current behavior and challenge scope |
 | Cursor Plan | Cursor Grok 4.6 | Design PREMIUM overlay, merchandise-only discount, and test plan |
 | Cursor Agent | Cursor Grok 4.6 | Implement pricing helpers, regression tests, and verification |
+| Cursor Agent | GPT-5.6 Sol | Independently review the solution and prepare the pull request |
 
 ## Session Timeline
 
@@ -24,17 +25,18 @@
 | 2 | Cursor Plan / Cursor Grok 4.6 | Plan PREMIUM shipping + PERCENT bug fix | Overlay on existing rate table; extract discount/shipping helpers; specified regression tests | Approved the plan |
 | 3 | Cursor Agent / Cursor Grok 4.6 | Implement helpers, overlay, and tests | Merchandise-only PERCENT; PREMIUM free STANDARD at post-promo $50; 15 tests passing | Approved plan for implementation |
 | 4 | Cursor Agent / Cursor Grok 4.6 | Verify tests, types, lint, workflow log | 15 tests and typecheck passed; first `npm run verify` failed on pre-existing `scripts/check-workflow.mjs` `no-undef`; ignored `scripts/` in ESLint so verify/CI pass | None |
+| 5 | Cursor Agent / GPT-5.6 Sol | Review current solution before submission | No functional pricing defects; noted broad script lint exclusion and a missing percentage-threshold composition test | Requested code review, then PR creation |
 
 ## Rework and Corrections
 
 - AI suggestions rejected or substantially rewritten: `none`
 - Failed approaches / repeated attempts: first `npm run verify` failed on harness `no-undef`; ignored `scripts/` in ESLint rather than rewriting the checker
-- Model escalation or model switch: `none yet`
+- Model escalation or model switch: Cursor Grok 4.6 to GPT-5.6 Sol between implementation and independent review; reason `unknown`
 
 ## Verification
 
-- Commands/checks run: `npm test` (15 passed); `npm run typecheck` (clean); `npm run verify` (pass after ignoring `scripts/` in ESLint); `npm run workflow:check` (OK)
-- Independent AI review performed: `no`
+- Commands/checks run: `npm test` (15 passed); `npm run typecheck` (clean); `npm run verify` (pass after ignoring `scripts/` in ESLint); `npm run verify:submission` (pass, including workflow check)
+- Independent AI review performed: `yes`; no functional pricing defects found, with two non-blocking follow-ups noted
 
 ## Reflection
 
